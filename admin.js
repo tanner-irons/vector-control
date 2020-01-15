@@ -1,2 +1,0 @@
-window.location.href = "https://login.microsoftonline.com/da8f04f2-fdac-45a9-9bd2-d709b4fde044/oauth2/v2.0/authorize?client_id=90e72b25-c0c0-4a0a-921e-ff55604a5193&response_type=code&scope=openid+Calendars.Read"
-https://login.microsoftonline.com/{tenant}/adminconsent

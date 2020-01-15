@@ -1,0 +1,23 @@
+{
+  "name": "vector-control",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tanner-irons/vector-control.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tanner-irons/vector-control/issues"
+  },
+  "homepage": "https://github.com/tanner-irons/vector-control#readme",
+  "devDependencies": {
+    "electron": "^7.1.9"
+  }
+}
