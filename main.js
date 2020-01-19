@@ -62,6 +62,9 @@ function createAuthWindow(mainWindow) {
 }
 
 function init() {
+    var fs = require('fs');
+    var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+
     const platform = require('os').platform();
 
     const mainWindow = createMainWindow();
@@ -102,10 +105,10 @@ function init() {
             grant_type: 'authorization_code',
             code: params.get('code'),
             redirect_uri: 'http://localhost',
-            client_id: '90e72b25-c0c0-4a0a-921e-ff55604a5193',
-            client_secret: 'EHpN4yp1J.WIW.7z6Vyez@:AgH@bdror'
+            client_id: config.client_id,
+            client_secret: config.client_secret
         });
-        axios.post('https://login.microsoftonline.com/da8f04f2-fdac-45a9-9bd2-d709b4fde044/oauth2/v2.0/token',
+        axios.post('https://login.microsoftonline.com/' + config.tenant + '/oauth2/v2.0/token',
             data,
             {
                 headers: {
@@ -125,7 +128,7 @@ function init() {
         })
     );
 
-    var authURL = 'https://login.microsoftonline.com/da8f04f2-fdac-45a9-9bd2-d709b4fde044/oauth2/v2.0/authorize?client_id=90e72b25-c0c0-4a0a-921e-ff55604a5193&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared';
+    var authURL = 'https://login.microsoftonline.com/' + config.tenant + '/oauth2/v2.0/authorize?client_id=' + config.client_id + '&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared';
     authWindow.loadURL(authURL);
     authWindow.show();
 }
