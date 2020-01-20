@@ -108,7 +108,7 @@ function init() {
             client_id: config.client_id,
             client_secret: config.client_secret
         });
-        axios.post('https://login.microsoftonline.com/' + config.tenant + '/oauth2/v2.0/token',
+        axios.post(`https://login.microsoftonline.com/${config.tenant}/oauth2/v2.0/token`,
             data,
             {
                 headers: {
@@ -120,6 +120,10 @@ function init() {
             });
     });
 
+    ipcMain.on('script', (event, start) => {
+        console.log('main', start);
+    });
+
     mainWindow.loadURL(
         url.format({
             pathname: path.join(__dirname, '/dist/index.html'),
@@ -128,7 +132,7 @@ function init() {
         })
     );
 
-    var authURL = 'https://login.microsoftonline.com/' + config.tenant + '/oauth2/v2.0/authorize?client_id=' + config.client_id + '&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared';
+    var authURL = `https://login.microsoftonline.com/${config.tenant}/oauth2/v2.0/authorize?client_id=${config.client_id}&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared`;
     authWindow.loadURL(authURL);
     authWindow.show();
 }

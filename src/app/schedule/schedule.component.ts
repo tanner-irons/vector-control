@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { CronService } from '../cron.service';
+import { CronJob } from 'cron';
+import * as moment from 'moment';
+const { ipcRenderer } = (<any>window).require('electron');
 
 @Component({
   selector: 'app-schedule',
@@ -8,23 +12,52 @@ import { HttpClient } from '@angular/common/http';
 })
 export class ScheduleComponent implements OnInit {
 
+  private events: any[] = [];
+  private refreshEventsJob: CronJob;
+  private checkEventsJob: CronJob;
   constructor(
-    private http: HttpClient
+    private http: HttpClient,
+    private cronService: CronService
   ) { }
 
   ngOnInit() {
-    const token = localStorage.getItem('token');
-    this.http.get("https://outlook.office.com/api/v2.0/Users('a529241e-669c-4545-82b5-8b0f0b58b182@da8f04f2-fdac-45a9-9bd2-d709b4fde044')/Calendars('AQMkAGJhYjBkZjRmLTYyNzItNDhkNS1iZDhjLWE2MGRjOTdmMmVjMgBGAAADDd87d1GyOkCNppF6dFgiHAcAZUY3J-SUakmsE8XWfBnfCgAAAgEGAAAAZUY3J-SUakmsE8XWfBnfCgAAAglmAAAA')/calendarview?startDateTime=2020-01-20T00:00:00&endDateTime=2020-01-20T23:59:00",
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        }
+    this.refreshEvents();
+    this.refreshEventsJob = this.cronService.registerJob('refreshEvents', '*/15 * * * *', () => {
+      this.refreshEvents();
+    });
+
+    this.checkEventsJob = this.cronService.registerJob('checkEvents', ' * * * * *', () => {
+      const time = moment().format('HH:mm');
+      if (this.events.length > 0) {
+        this.events.forEach(event => {
+          const start = moment(event.Start.DateTime).format('HH:mm');
+          if (time === start) {
+            ipcRenderer.send('script', start);
+            console.log('The meeting starts now');
+          }
+        });
       }
-    )
-      .subscribe(calendars => {
-        console.log(calendars);
-      });
+    });
+  }
+
+  private refreshEvents() {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const start = moment().toISOString(true);
+      const end = moment(start).add(30, 'minutes').toISOString(true);
+      this.http.get<any>(`https://outlook.office.com/api/v2.0/me/calendarview?startDateTime=${start}&endDateTime=${end}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + token,
+            'Prefer': 'outlook.timezone="Central Standard Time"'
+          }
+        }
+      )
+        .subscribe(calendars => {
+          this.events = calendars.value;
+        });
+    }
   }
 
 }
