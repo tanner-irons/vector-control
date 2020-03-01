@@ -1,7 +1,16 @@
+const electron = require('electron')
+
+// Enable live reload for Electron too
+require('electron-reload')(__dirname, {
+    // Note that the path to electron may vary according to the main file
+    electron: require(`${__dirname}/node_modules/electron`)
+});
+
 const { app, Tray, Menu, BrowserWindow, session, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 const axios = require('axios').default;
+var spawn = require("child_process").spawn; 
 
 function createMainWindow() {
     let mainWindow = new BrowserWindow({
@@ -32,7 +41,7 @@ function createMainWindow() {
         // when you should delete the corresponding element.
         mainWindow = null;
     });
-
+    
     mainWindow.on('minimize', (event) => {
         event.preventDefault();
         mainWindow.hide();
@@ -114,7 +123,8 @@ function init() {
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded'
                 }
-            }).then(response => {
+            })
+            .then(response => {
                 mainWindow.webContents.send('token', response.data.access_token);
                 authWindow.close();
             });
@@ -122,6 +132,7 @@ function init() {
 
     ipcMain.on('script', (event, start) => {
         console.log('main', start);
+        const process = spawn('python',["./src/vector-scripts/outlook.py"] ); 
     });
 
     mainWindow.loadURL(

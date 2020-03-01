@@ -1,4 +1,6 @@
-<h1>Processes</h1>
-<ng-container *ngIf="loaded">
-    <app-schedule></app-schedule>
-</ng-container>
+<mat-toolbar>
+    <h1>Vector Control</h1>
+</mat-toolbar>
+<div class="processes-list" *ngIf="loaded">
+    <app-process *ngFor="let process of processes" [process]="process"></app-process>
+</div>

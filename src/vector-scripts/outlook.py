@@ -71,8 +71,12 @@ def getCalendar(token):
 
 
 def main():
-    token = getToken()
-    getCalendar(token)
+    # token = getToken()
+    # getCalendar(token)
+    args = anki_vector.util.parse_command_args()
+    with anki_vector.Robot(args.serial) as robot:
+        robot.behavior.say_text("You have a meeting now.")
+        print("Python")
 
 
 if __name__ == '__main__':
