@@ -24,8 +24,8 @@ export class ScheduleService implements IProcess {
 
   public initProcess(): void {
     this.refreshEvents();
-    this.refreshEventsJob = this.cronService.registerJob('refreshEvents', '* * * * *', this.refreshEvents);
-    this.checkEventsJob = this.cronService.registerJob('checkEvents', ' * * * * *', this.checkEvents);
+    this.refreshEventsJob = this.cronService.registerJob('refreshEvents', '* * * * *', () => this.refreshEvents());
+    this.checkEventsJob = this.cronService.registerJob('checkEvents', ' * * * * *', () => this.checkEvents());
   }
 
   public destroyProcess(): void {

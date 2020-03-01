@@ -142,7 +142,7 @@ function init() {
             slashes: true
         })
     );
-
+    mainWindow.webContents.openDevTools()
     var authURL = `https://login.microsoftonline.com/${config.tenant}/oauth2/v2.0/authorize?client_id=${config.client_id}&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared`;
     authWindow.loadURL(authURL);
     authWindow.show();
