@@ -14,7 +14,7 @@ export class CronService implements OnInit {
   }
 
   public registerJob(name: string, pattern: string, callback: () => void): CronJob {
-    const job = new CronJob(pattern, callback, null, true, 'America/Chicago');
+    const job = new CronJob(pattern, callback, null, true, 'America/Chicago', null, false);
     this.jobs.set(name, job);
 
     return job;
@@ -27,6 +27,7 @@ export class CronService implements OnInit {
   ngOnDestroy(): void {
     Array.from(this.jobs.values()).forEach(job => {
       job.stop();
+      job.start
     });
   }
 

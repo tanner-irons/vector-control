@@ -130,9 +130,8 @@ function init() {
             });
     });
 
-    ipcMain.on('script', (event, start) => {
-        console.log('main', start);
-        const process = spawn('python',["./src/vector-scripts/outlook.py"] ); 
+    ipcMain.on('schedule', (event, title, location, reminder) => {
+        const process = spawn('python',['./src/vector-scripts/schedule.py', '--title', title, '--location', location, '--reminder', reminder] ); 
     });
 
     mainWindow.loadURL(

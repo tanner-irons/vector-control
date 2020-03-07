@@ -4,15 +4,15 @@ import { CronJob } from 'cron';
 import { HttpClient } from '@angular/common/http';
 import { CronService } from 'src/app/cron/cron.service';
 import * as moment from 'moment';
-import { IProcess } from '../process/process.model';
-import { ProcessesModule } from '../processes.module';
+import { IProcess } from '../process-block/process-block.model';
 const { ipcRenderer } = (<any>window).require('electron');
 
 @Injectable()
 export class ScheduleService implements IProcess {
 
   public name: string = 'Schedule Notifications';
-
+  public isRunning: boolean = false;
+  
   private events: IEvent[] = [];
   private refreshEventsJob: CronJob;
   private checkEventsJob: CronJob;
@@ -23,12 +23,17 @@ export class ScheduleService implements IProcess {
   ) { }
 
   public initProcess(): void {
-    this.refreshEvents();
     this.refreshEventsJob = this.cronService.registerJob('refreshEvents', '* * * * *', () => this.refreshEvents());
     this.checkEventsJob = this.cronService.registerJob('checkEvents', ' * * * * *', () => this.checkEvents());
   }
 
-  public destroyProcess(): void {
+  public startProcess(): void {
+    this.refreshEvents();
+    this.refreshEventsJob.start();
+    this.checkEventsJob.start();
+  }
+
+  public stopProcess(): void {
     this.refreshEventsJob.stop();
     this.checkEventsJob.stop();
   }
@@ -46,11 +51,11 @@ export class ScheduleService implements IProcess {
       this.events.forEach(event => {
         const start = moment(event.Start.DateTime).format('HH:mm');
         if (time === start) {
-          ipcRenderer.send('script', start);
+          ipcRenderer.send('schedule', event.Subject, event.Location.DisplayName);
           console.log('The meeting starts now');
         }
         else if (this.shouldRemind(event, now)) {
-          ipcRenderer.send('script', start);
+          ipcRenderer.send('schedule', event.Subject, event.Location.DisplayName, event.ReminderMinutesBeforeStart);
           console.log('This is a reminder.');
         }
       });

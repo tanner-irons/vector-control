@@ -1,8 +1,8 @@
 import { Component, OnInit, Compiler } from '@angular/core';
-import { IProcess } from '../processes/process/process.model';
 import { ProcessesModule } from '../processes/processes.module';
 import { HttpClient } from '@angular/common/http';
 import { CronService } from '../cron/cron.service';
+import { IProcess } from '../processes/process-block/process-block.model';
 
 @Component({
   selector: 'app-run',

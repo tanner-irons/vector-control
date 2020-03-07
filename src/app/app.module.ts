@@ -6,23 +6,21 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { RunComponent } from './run/run.component';
 import { NoopAnimationsModule } from '@angular/platform-browser/animations';
-import { MatCardModule } from '@angular/material/card';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { ProcessComponent } from './processes/process/process.component';
+import { ProcessesModule } from './processes/processes.module';
 
 @NgModule({
   declarations: [
     AppComponent,
-    RunComponent,
-    ProcessComponent
+    RunComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     HttpClientModule,
     NoopAnimationsModule,
-    MatCardModule,
-    MatToolbarModule
+    MatToolbarModule,
+    ProcessesModule
   ],
   providers: [],
   bootstrap: [AppComponent]
