@@ -1,8 +1,7 @@
-import { Component, OnInit, Compiler } from '@angular/core';
-import { ProcessesModule } from '../processes/processes.module';
-import { HttpClient } from '@angular/common/http';
-import { CronService } from '../cron/cron.service';
+import { Component, OnInit } from '@angular/core';
 import { IProcess } from '../processes/process-block/process-block.model';
+import { ScheduleService } from '../processes/schedule/schedule.service';
+import { ZombieService } from '../processes/zombie/zombie.service';
 
 @Component({
   selector: 'app-run',
@@ -15,17 +14,15 @@ export class RunComponent implements OnInit {
   public processes: IProcess[] = [];
 
   constructor(
-    private compiler: Compiler,
-    private http: HttpClient,
-    private cron: CronService
+    private scheduleService: ScheduleService,
+    private zombieService: ZombieService
   ) { }
 
   ngOnInit(): void {
-    this.compiler.compileModuleAsync(ProcessesModule).then(compiled => {
-      (compiled as any).moduleType.ngInjectorDef.providers.forEach(process => {
-        this.registerProcess(new process(this.http, this.cron));
-      });
-    });
+    this.processes = [
+      this.scheduleService,
+      this.zombieService
+    ];
   }
 
   ngDoCheck(): void {
@@ -35,9 +32,5 @@ export class RunComponent implements OnInit {
         this.loaded = true;
       }
     }
-  }
-
-  private registerProcess(process: IProcess) {
-    this.processes.push(process);
   }
 }

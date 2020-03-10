@@ -1,21 +1,24 @@
 const electron = require('electron')
 
-// Enable live reload for Electron too
-require('electron-reload')(__dirname, {
-    // Note that the path to electron may vary according to the main file
-    electron: require(`${__dirname}/node_modules/electron`)
-});
+if (process.env.NODE_ENV === 'development') {
+    // Enable live reload for Electron too
+    require('electron-reload')(__dirname, {
+        // Note that the path to electron may vary according to the main file
+        electron: require(`${__dirname}/node_modules/electron`)
+    });
+}
 
 const { app, Tray, Menu, BrowserWindow, session, ipcMain } = require('electron');
 const path = require('path');
 const url = require('url');
 const axios = require('axios').default;
-var spawn = require("child_process").spawn; 
+var spawn = require("child_process").spawn;
 
 function createMainWindow() {
     let mainWindow = new BrowserWindow({
         width: 800,
         height: 600,
+        // frame: false,
         webPreferences: {
             nodeIntegration: true,
             webSecurity: false
@@ -41,7 +44,7 @@ function createMainWindow() {
         // when you should delete the corresponding element.
         mainWindow = null;
     });
-    
+
     mainWindow.on('minimize', (event) => {
         event.preventDefault();
         mainWindow.hide();
@@ -72,12 +75,20 @@ function createAuthWindow(mainWindow) {
 
 function init() {
     var fs = require('fs');
-    var config = JSON.parse(fs.readFileSync('./config.json', 'utf8'));
+    var config = JSON.parse(fs.readFileSync(path.resolve(__dirname, 'config.json'), 'utf8'));
 
     const platform = require('os').platform();
 
     const mainWindow = createMainWindow();
     const authWindow = createAuthWindow();
+
+    if (process.env.NODE_ENV === 'production') {
+        mainWindow.setMenu(null);
+        authWindow.setMenu(null);
+    }
+    else {
+        mainWindow.webContents.openDevTools()
+    }
 
     const contextMenu = Menu.buildFromTemplate([
         {
@@ -131,7 +142,7 @@ function init() {
     });
 
     ipcMain.on('schedule', (event, title, location, reminder) => {
-        const process = spawn('python',['./src/vector-scripts/schedule.py', '--title', title, '--location', location, '--reminder', reminder] ); 
+        const process = spawn('python', [path.resolve(__dirname, './src/vector-scripts/schedule.py'), '--title', title, '--location', location, '--reminder', reminder]);
     });
 
     mainWindow.loadURL(
@@ -141,7 +152,6 @@ function init() {
             slashes: true
         })
     );
-    mainWindow.webContents.openDevTools()
     var authURL = `https://login.microsoftonline.com/${config.tenant}/oauth2/v2.0/authorize?client_id=${config.client_id}&response_type=code&scope=openid+https://outlook.office.com/Calendars.Read.Shared`;
     authWindow.loadURL(authURL);
     authWindow.show();

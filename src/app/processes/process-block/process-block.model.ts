@@ -1,5 +1,5 @@
 export interface IProcess {
-    name: string;
+    title: string;
     isRunning: boolean;
     initProcess(): void;
     startProcess(): void;

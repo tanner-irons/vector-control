@@ -1,17 +1,14 @@
-import { Injectable, OnInit } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { CronJob } from 'cron';
 
 @Injectable({
   providedIn: 'root'
 })
-export class CronService implements OnInit {
+export class CronService {
 
   private jobs: Map<string, CronJob> = new Map<string, CronJob>();
+  
   constructor() { }
-
-  ngOnInit(): void {
-
-  }
 
   public registerJob(name: string, pattern: string, callback: () => void): CronJob {
     const job = new CronJob(pattern, callback, null, true, 'America/Chicago', null, false);
@@ -25,10 +22,7 @@ export class CronService implements OnInit {
   }
 
   ngOnDestroy(): void {
-    Array.from(this.jobs.values()).forEach(job => {
-      job.stop();
-      job.start
-    });
+    Array.from(this.jobs.values()).forEach(job => job.stop());
   }
 
 }

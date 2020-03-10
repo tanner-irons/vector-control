@@ -1,5 +1,5 @@
 <mat-card>
-    <mat-card-title>{{ process.name }}</mat-card-title>
+    <mat-card-title>{{ process.title }}</mat-card-title>
     <mat-card-subtitle>Status: {{ process.isRunning ? 'Running' : 'Stopped' }}</mat-card-subtitle>
     <mat-card-actions>
         <mat-slide-toggle color="accent" [checked]='process.isRunning' (change)="toggleProcess($event)"></mat-slide-toggle>

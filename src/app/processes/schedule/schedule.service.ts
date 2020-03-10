@@ -7,10 +7,12 @@ import * as moment from 'moment';
 import { IProcess } from '../process-block/process-block.model';
 const { ipcRenderer } = (<any>window).require('electron');
 
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class ScheduleService implements IProcess {
 
-  public name: string = 'Schedule Notifications';
+  public title: string = 'Schedule Notifications';
   public isRunning: boolean = false;
   
   private events: IEvent[] = [];
@@ -52,7 +54,7 @@ export class ScheduleService implements IProcess {
         const start = moment(event.Start.DateTime).format('HH:mm');
         if (time === start) {
           ipcRenderer.send('schedule', event.Subject, event.Location.DisplayName);
-          console.log('The meeting starts now');
+          console.log('The meeting starts now.');
         }
         else if (this.shouldRemind(event, now)) {
           ipcRenderer.send('schedule', event.Subject, event.Location.DisplayName, event.ReminderMinutesBeforeStart);
